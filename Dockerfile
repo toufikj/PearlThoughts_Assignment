@@ -1,15 +1,21 @@
-FROM node:20-alpine
+FROM node:18-alpine
 
+# Set working directory
 WORKDIR /app
 
-# Install Medusa CLI globally
-RUN npm install -g @medusajs/medusa-cli
+# Download Medusa backend source code
+RUN apk add --no-cache git \
+    && git clone --depth 1 https://github.com/medusajs/medusa.git . \
+    && rm -rf .git
 
-# Copy all app code (including node_modules if already present)
-COPY . .
+# Install dependencies
+RUN npm install
 
-# Skip build if not required
-# RUN medusa build  # <-- Only if your project explicitly needs it
+# (Optional) Copy your custom files or configuration here
+# COPY .env ./
 
-# Start with proper mode handling
-CMD ["sh", "-c", "if [ \"$MEDUSA_WORKER_MODE\" = \"server\" ]; then npm run predeploy && npm run start; else npm run start; fi"]
+# Expose Medusa backend port
+EXPOSE 9000
+
+# Start Medusa
+CMD ["npm", "run", "start"]
