@@ -1,21 +1,20 @@
 FROM node:18-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Download Medusa backend source code
-RUN apk add --no-cache git \
-    && git clone --depth 1 https://github.com/medusajs/medusa.git . \
+# Install git and build dependencies for native modules
+RUN apk add --no-cache git python3 make g++
+
+# Clone MedusaJS backend
+RUN git clone --depth 1 https://github.com/medusajs/medusa.git . \
     && rm -rf .git
+
+# (Optional) List files for debugging
+RUN ls -la
 
 # Install dependencies
 RUN npm install
 
-# (Optional) Copy your custom files or configuration here
-# COPY .env ./
-
-# Expose Medusa backend port
 EXPOSE 9000
 
-# Start Medusa
 CMD ["npm", "run", "start"]
