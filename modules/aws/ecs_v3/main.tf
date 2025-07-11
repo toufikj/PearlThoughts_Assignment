@@ -100,17 +100,19 @@ resource "random_password" "postgres" {
 }
 
 resource "aws_db_instance" "postgres" {
-  allocated_storage    = 20
-  engine               = "postgres"
-  engine_version       = "15.7"
-  instance_class       = "db.t3.micro"
-  db_name              = var.db_name
-  username             = var.db_username
-  password             = random_password.postgres.result
-  parameter_group_name = "default.postgres15"
-  skip_final_snapshot  = true
+  identifier            = "${var.product}-postgres" # Give a name to the RDS instance
+  allocated_storage     = 20
+  engine                = "postgres"
+  engine_version        = "15.7"
+  instance_class        = "db.t3.micro"
+  db_name               = var.db_name
+  username              = var.db_username
+  password              = random_password.postgres.result
+  parameter_group_name  = "default.postgres15"
+  skip_final_snapshot   = true
   vpc_security_group_ids = [var.security_group]
-  db_subnet_group_name   = aws_db_subnet_group.postgres.name
+  db_subnet_group_name    = aws_db_subnet_group.postgres.name
+  publicly_accessible     = true # Make RDS publicly accessible
 }
 
 resource "aws_db_subnet_group" "postgres" {
