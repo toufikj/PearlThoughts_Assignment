@@ -51,26 +51,20 @@ jobs:
 
       - name: Clone Medusa Server
         run: |
-          git clone https://github.com/medusajs/medusa.git medusa-backend
+          git clone https://github.com/medusajs/medusa-starter-default.git medusa-backend
 
       - name: Create Dockerfile for Medusa
         run: |
           cat <<EOF > medusa-backend/Dockerfile
-            FROM node:17.1.0
+            FROM node:20
 
-            WORKDIR /app/medusa
+            WORKDIR /app
 
-            COPY package.json .
-
-            RUN apt-get update
-            RUN apt-get install -y python
-            RUN npm install -g npm@latest
-            RUN npm install -g @medusajs/medusa-cli@latest
-            RUN npm install --loglevel=error
-
+            COPY package*.json ./
+            RUN npm install
             COPY . .
-
-            ENTRYPOINT ["./develop.sh", "develop"]
+            EXPOSE 9000
+            CMD ["npm", "run", "start"]
           EOF
       
       - name: Build and push Docker image
