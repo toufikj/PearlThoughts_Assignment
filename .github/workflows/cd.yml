@@ -55,7 +55,7 @@ jobs:
 
       - name: Clone Medusa Server
         run: |
-          git clone https://github.com/medusajs/medusa-starter-default.git
+          git clone https://github.com/toufikj/medusa-starter-default.git
 
       - name: Create Dockerfile for Medusa
         run: |
