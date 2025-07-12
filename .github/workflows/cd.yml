@@ -22,7 +22,7 @@ on:
         description: 'The path to the Dockerfile'
         required: true
         type: string
-        default: .
+        default: ./medusa-docker/
       
 
 jobs:
@@ -61,6 +61,7 @@ jobs:
 
       - name: Create Dockerfile for Medusa
         run: |
+          cd medusa-docker
           cat <<EOF > ./Dockerfile
             # Set the base image to Node 17.1.0-alpine
             FROM node:17.1.0-alpine
