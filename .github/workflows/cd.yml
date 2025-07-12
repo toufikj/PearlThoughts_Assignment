@@ -61,7 +61,7 @@ jobs:
 
       - name: Create Dockerfile for Medusa
         run: |
-          cat <<EOF > medusa-backend/Dockerfile
+          cat <<EOF > ./Dockerfile
             # Set the base image to Node 17.1.0-alpine
             FROM node:17.1.0-alpine
 
