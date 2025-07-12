@@ -55,7 +55,7 @@ jobs:
 
       - name: Create Dockerfile for Medusa
         run: |
-          echo "FROM node:20-alpine\n\nWORKDIR /app\n\nCOPY . .\n\nRUN npm install\n\nEXPOSE 9000\n\nCMD [\"npm\", \"run\", \"start\"]" > medusa-backend/Dockerfile
+          echo "FROM node:17.1.0\n\nWORKDIR /app/medusa\n\nCOPY package.json .\n\nRUN apt-get update\n\nRUN apt-get install -y python\n\nRUN npm install -g npm@latest\n\nRUN npm install -g @medusajs/medusa-cli@latest\n\nRUN npm install --loglevel=error\n\nCOPY . .\n\nENTRYPOINT [\"./develop.sh\", \"develop\"]" > medusa-backend/Dockerfile
       
       - name: Build and push Docker image
         id: build-and-push
