@@ -49,6 +49,13 @@ jobs:
         id: ecr-login
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Clone Medusa Server
+        run: |
+          git clone https://github.com/medusajs/medusa.git medusa-backend
+
+      - name: Create Dockerfile for Medusa
+        run: |
+          echo "FROM node:20-alpine\n\nWORKDIR /app\n\nCOPY . .\n\nRUN npm install\n\nEXPOSE 9000\n\nCMD [\"npm\", \"run\", \"start\"]" > medusa-backend/Dockerfile
       
       - name: Build and push Docker image
         id: build-and-push

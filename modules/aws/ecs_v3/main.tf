@@ -5,7 +5,7 @@ resource "aws_cloudwatch_log_group" "ecs" {
 }
 
 resource "aws_secretsmanager_secret" "database_url" {
-  name = "${var.product}-database-url"
+  name = "${var.product}-database-url-v2"
 }
 resource "aws_secretsmanager_secret_version" "database_url" {
   secret_id     = aws_secretsmanager_secret.database_url.id
@@ -13,7 +13,7 @@ resource "aws_secretsmanager_secret_version" "database_url" {
 }
 
 resource "aws_secretsmanager_secret" "redis_url" {
-  name = "${var.product}-redis-url"
+  name = "${var.product}-redis-url-v2"
 }
 resource "aws_secretsmanager_secret_version" "redis_url" {
   secret_id     = aws_secretsmanager_secret.redis_url.id
@@ -43,7 +43,7 @@ resource "aws_ecs_task_definition" "ecs" {
     },
     {
       name  = "DISABLE_MEDUSA_ADMIN"
-      value = "true"
+      value = "false"
     },
     {
       name  = "MEDUSA_WORKER_MODE"
@@ -96,7 +96,10 @@ resource "aws_ecs_service" "ecs" {
 # PostgreSQL RDS
 resource "random_password" "postgres" {
   length  = 16
-  special = true
+  special = false
+  upper   = true
+  lower   = true
+  number  = true
 }
 
 resource "aws_db_instance" "postgres" {
