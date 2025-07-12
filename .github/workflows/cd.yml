@@ -55,19 +55,38 @@ jobs:
 
       - name: Clone Medusa Server
         run: |
-          git clone https://github.com/toufikj/medusa-starter-default.git medusa-backend
+          git clone https://github.com/Prn-Ice/medusa-docker
+          cd medusa-docker
+          git submodule update --init --recursive --remote
 
       - name: Create Dockerfile for Medusa
         run: |
           cat <<EOF > medusa-backend/Dockerfile
-            FROM node:20
-            RUN npm install -g @medusajs/medusa-cli@latest
-            RUN npx create-medusa-app@latest --skip-db my-medusa-store
-            WORKDIR /my-medusa-store
+            # Set the base image to Node 17.1.0-alpine
+            FROM node:17.1.0-alpine
 
+            # Set the working directory
+            WORKDIR /app/medusa
+
+            # Copy the necessary files
+            COPY package.json .
+            COPY develop.sh .
+            COPY yarn.* .
+
+            # Run the apk update command to update package information
+            RUN apk update
+
+            # Install dependencies
+            RUN yarn --network-timeout 1000000
+
+            # Install the medusa-cli
+            RUN yarn global add @medusajs/medusa-cli@latest
+
+            # Add the remaining files
             COPY . .
-            EXPOSE 9000
-            CMD ["sh", "-c", "npm run dev"]
+
+            # Set the default command to run when the container starts
+            ENTRYPOINT ["sh", "develop.sh"]
           EOF
       
       
