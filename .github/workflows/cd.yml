@@ -77,16 +77,16 @@ jobs:
 
             # Run the apk update command to update package information
             RUN apk update
+            
+            # Add the remaining files
+            COPY ./medusa-starter-default/ .
 
             # Install dependencies
             RUN yarn --network-timeout 1000000
 
             # Install the medusa-cli
             RUN yarn global add @medusajs/medusa-cli@latest
-
-            # Add the remaining files
-            COPY ./medusa-starter-default/ .
-
+            
             # Set the default command to run when the container starts
             ENTRYPOINT ["sh", "develop.sh"]
           EOF
