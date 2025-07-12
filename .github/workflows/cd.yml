@@ -58,10 +58,12 @@ jobs:
           git clone https://github.com/Prn-Ice/medusa-docker
           cd medusa-docker
           git submodule update --init --recursive --remote
+          ls -l
 
       - name: Create Dockerfile for Medusa
         run: |
           cd medusa-docker
+          ls -l
           cat <<EOF > ./Dockerfile
             # Set the base image to Node 17.1.0-alpine
             FROM node:17.1.0-alpine
