@@ -71,7 +71,7 @@ jobs:
 
             # Copy the necessary files
             COPY package.json .
-            COPY develop.sh .
+            COPY ./medusa-backend/develop.sh .
             COPY yarn.* .
 
             # Run the apk update command to update package information
