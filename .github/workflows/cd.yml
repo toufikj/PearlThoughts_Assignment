@@ -56,7 +56,7 @@ jobs:
       - name: Clone Medusa Server
         run: |
           git clone https://github.com/medusajs/medusa-starter-default.git
-          git clone https://github.com/Prn-Ice/medusa-docker
+          git clone https://github.com/Prn-Ice/medusa-docker.git
           cd medusa-docker
           git submodule update --init --recursive --remote
           ls -l
@@ -72,7 +72,7 @@ jobs:
 
             # Copy the necessary files
             COPY ./medusa-starter-default/package.json .
-            COPY ./medusa-docker/develop.sh .
+            COPY ./medusa-docker/backend/develop.sh .
             COPY ./medusa-starter-default/yarn.* .
 
             # Run the apk update command to update package information
@@ -86,7 +86,7 @@ jobs:
 
             # Add the remaining files
             COPY ./medusa-starter-default/ .
-            
+
             # Set the default command to run when the container starts
             ENTRYPOINT ["sh", "develop.sh"]
           EOF
