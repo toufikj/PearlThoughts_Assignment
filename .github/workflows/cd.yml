@@ -62,7 +62,7 @@ jobs:
 
       - name: Create Dockerfile for Medusa
         run: |
-          cd medusa-docker
+          cd medusa-docker/backend
           ls -l
           cat <<EOF > ./Dockerfile
             # Set the base image to Node 17.1.0-alpine
@@ -72,8 +72,8 @@ jobs:
             WORKDIR /app/medusa
 
             # Copy the necessary files
-            COPY ./backend/package.json .
-            COPY ./backend/develop.sh .
+            COPY package.json .
+            COPY develop.sh .
             COPY yarn.* .
 
             # Run the apk update command to update package information
