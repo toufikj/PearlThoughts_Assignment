@@ -5,20 +5,13 @@ resource "aws_cloudwatch_log_group" "ecs" {
 }
 
 resource "aws_secretsmanager_secret" "database_url" {
-  name = "${var.product}-database-url-v2"
+  name = "${var.product}-database-url-v3"
 }
 resource "aws_secretsmanager_secret_version" "database_url" {
   secret_id     = aws_secretsmanager_secret.database_url.id
   secret_string = "postgres://${aws_db_instance.postgres.username}:${random_password.postgres.result}@${aws_db_instance.postgres.address}:${aws_db_instance.postgres.port}/${aws_db_instance.postgres.db_name}"
 }
 
-resource "aws_secretsmanager_secret" "redis_url" {
-  name = "${var.product}-redis-url-v2"
-}
-resource "aws_secretsmanager_secret_version" "redis_url" {
-  secret_id     = aws_secretsmanager_secret.redis_url.id
-  secret_string = "redis://${aws_elasticache_cluster.redis.cache_nodes[0].address}:${aws_elasticache_cluster.redis.cache_nodes[0].port}"
-}
 # Create ECS Task Definition for Strapi
 resource "aws_ecs_task_definition" "ecs" {
   family                   = "${var.stage}-${var.product}-task"
@@ -43,7 +36,7 @@ resource "aws_ecs_task_definition" "ecs" {
     },
     {
       name  = "DISABLE_MEDUSA_ADMIN"
-      value = "false"
+      value = "true"
     },
     {
       name  = "MEDUSA_WORKER_MODE"
@@ -58,10 +51,6 @@ resource "aws_ecs_task_definition" "ecs" {
     {
       name      = "DATABASE_URL"
       valueFrom = aws_secretsmanager_secret.database_url.arn
-    },
-    {
-      name      = "REDIS_URL"
-      valueFrom = aws_secretsmanager_secret.redis_url.arn
     }
   ]
   logConfiguration = {
@@ -99,7 +88,7 @@ resource "random_password" "postgres" {
   special = false
   upper   = true
   lower   = true
-  number  = true
+  numeric = true
 }
 
 resource "aws_db_instance" "postgres" {
@@ -123,18 +112,3 @@ resource "aws_db_subnet_group" "postgres" {
   subnet_ids = var.public_subnets
 }
 
-# Redis (ElastiCache)
-resource "aws_elasticache_subnet_group" "redis" {
-  name       = "${var.product}-redis-subnet-group"
-  subnet_ids = var.public_subnets
-}
-
-resource "aws_elasticache_cluster" "redis" {
-  cluster_id           = "${var.product}-redis"
-  engine               = "redis"
-  node_type            = "cache.t3.micro"
-  num_cache_nodes      = 1
-  parameter_group_name = "default.redis7"
-  subnet_group_name    = aws_elasticache_subnet_group.redis.name
-  security_group_ids   = [var.security_group]
-}
