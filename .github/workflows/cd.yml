@@ -66,7 +66,7 @@ jobs:
             COPY . .
             RUN npm run build
             EXPOSE 9000
-            CMD npx medusa migrations run && npm run start
+            CMD ["sh", "-c", "npx medusa migrations run && npm run start"]
           EOF
       
       - name: Build and push Docker image
