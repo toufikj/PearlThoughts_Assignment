@@ -27,6 +27,10 @@ on:
 
 jobs:
   build:
+    env:
+      ECS_TASK_DEFINITION: "medusa-starter-default"
+      CONTAINER_NAME: "medusa"
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -51,21 +55,30 @@ jobs:
 
       - name: Clone Medusa Server
         run: |
-          git clone https://github.com/toufikj/medusa-starter-default.git medusa-backend
+          git clone https://github.com/medusajs/docker-medusa.git medusa-backend
 
       - name: Create Dockerfile for Medusa
         run: |
           cat <<EOF > medusa-backend/Dockerfile
             FROM node:20
 
-            WORKDIR /app
+            WORKDIR /app/medusa
 
-            COPY package*.json ./
-            RUN npm install zod@latest
-            RUN npm install
+            COPY package.json .
+
+            RUN apt-get update
+
+            RUN apt-get install -y python
+
+            RUN npm install -g npm@latest
+
+            RUN npm install -g @medusajs/medusa-cli@latest
+
+            RUN npm install --loglevel=error
+
             COPY . .
-            EXPOSE 9000
-            CMD ["sh", "-c", "npx medusa db:migrate && npm run predeploy && npm run start"]
+
+            ENTRYPOINT ["./develop.sh", "develop"]
           EOF
       
       - name: Build and push Docker image
@@ -78,30 +91,30 @@ jobs:
           tags: |
             ${{ inputs.ecr-registry }}/${{ inputs.ecr-repository }}
 
-      # - name: Get the Current ECS Task Definition
-      #   id: get-task-def
-      #   run: |
-      #     aws ecs describe-task-definition --task-definition ${{ inputs.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
+      - name: Get the Current ECS Task Definition
+        id: get-task-def
+        run: |
+          aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
 
-      # - name: Render New ECS Task Definition
-      #   id: task-def
-      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
-      #   with:
-      #     task-definition: task-definition.json
-      #     container-name: ${{ inputs.CONTAINER_NAME }}
-      #     image: ${{ inputs.ecr-registry }}/${{ inputs.ecr-repository }}
-      #     environment-variables: ${{ env.ECS_ENV_VARS }}
-      #     secrets: ${{ env.ECS_SECRETS }}
+      - name: Render New ECS Task Definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ inputs.CONTAINER_NAME }}
+          image: ${{ inputs.ecr-registry }}/${{ inputs.ecr-repository }}
+          environment-variables: ${{ env.ECS_ENV_VARS }}
+          secrets: ${{ env.ECS_SECRETS }}
 
-      # - name: Display Rendered Task Definition
-      #   run: |
-      #     echo "📄 Rendered Task Definition:"
-      #     cat ${{ steps.task-def.outputs.task-definition }}    
+      - name: Display Rendered Task Definition
+        run: |
+          echo "📄 Rendered Task Definition:"
+          cat ${{ steps.task-def.outputs.task-definition }}    
             
-      # - name: Deploy Amazon ECS Task Definition
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-      #   with:
-      #     task-definition: ${{ steps.task-def.outputs.task-definition }}
-      #     service: ${{ inputs.ECS_SERVICE_NAME }}
-      #     cluster: ${{ inputs.ECS_CLUSTER_NAME }}
-      #     wait-for-service-stability: true
+      - name: Deploy Amazon ECS Task Definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ inputs.ECS_SERVICE_NAME }}
+          cluster: ${{ inputs.ECS_CLUSTER_NAME }}
+          wait-for-service-stability: true
