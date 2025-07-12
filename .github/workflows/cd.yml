@@ -67,7 +67,7 @@ jobs:
 
             COPY . .
             EXPOSE 9000
-            CMD ["sh", "-c", "mnpm run dev"]
+            CMD ["sh", "-c", "npm run dev"]
           EOF
       
       
