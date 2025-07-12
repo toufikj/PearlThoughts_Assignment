@@ -22,7 +22,7 @@ on:
         description: 'The path to the Dockerfile'
         required: true
         type: string
-        default: .
+        default: ./medusa-backend/
       
 
 jobs:
@@ -60,30 +60,30 @@ jobs:
           tags: |
             ${{ inputs.ecr-registry }}/${{ inputs.ecr-repository }}
 
-      - name: Get the Current ECS Task Definition
-        id: get-task-def
-        run: |
-          aws ecs describe-task-definition --task-definition ${{ inputs.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
+      # - name: Get the Current ECS Task Definition
+      #   id: get-task-def
+      #   run: |
+      #     aws ecs describe-task-definition --task-definition ${{ inputs.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
 
-      - name: Render New ECS Task Definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          container-name: ${{ inputs.CONTAINER_NAME }}
-          image: ${{ inputs.ecr-registry }}/${{ inputs.ecr-repository }}
-          environment-variables: ${{ env.ECS_ENV_VARS }}
-          secrets: ${{ env.ECS_SECRETS }}
+      # - name: Render New ECS Task Definition
+      #   id: task-def
+      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
+      #   with:
+      #     task-definition: task-definition.json
+      #     container-name: ${{ inputs.CONTAINER_NAME }}
+      #     image: ${{ inputs.ecr-registry }}/${{ inputs.ecr-repository }}
+      #     environment-variables: ${{ env.ECS_ENV_VARS }}
+      #     secrets: ${{ env.ECS_SECRETS }}
 
-      - name: Display Rendered Task Definition
-        run: |
-          echo "📄 Rendered Task Definition:"
-          cat ${{ steps.task-def.outputs.task-definition }}    
+      # - name: Display Rendered Task Definition
+      #   run: |
+      #     echo "📄 Rendered Task Definition:"
+      #     cat ${{ steps.task-def.outputs.task-definition }}    
             
-      - name: Deploy Amazon ECS Task Definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ inputs.ECS_SERVICE_NAME }}
-          cluster: ${{ inputs.ECS_CLUSTER_NAME }}
-          wait-for-service-stability: true
+      # - name: Deploy Amazon ECS Task Definition
+      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+      #   with:
+      #     task-definition: ${{ steps.task-def.outputs.task-definition }}
+      #     service: ${{ inputs.ECS_SERVICE_NAME }}
+      #     cluster: ${{ inputs.ECS_CLUSTER_NAME }}
+      #     wait-for-service-stability: true
