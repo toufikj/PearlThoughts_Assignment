@@ -64,7 +64,6 @@ jobs:
             RUN npm install zod@latest
             RUN npm install
             COPY . .
-            RUN npm run build
             EXPOSE 9000
             CMD ["sh", "-c", "npx medusa migrations run && npm run start"]
           EOF
