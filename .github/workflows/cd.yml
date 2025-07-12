@@ -27,9 +27,6 @@ on:
 
 jobs:
   build:
-    env:
-      ECS_TASK_DEFINITION: "medusa-starter-default"
-      CONTAINER_NAME: "medusa"
       
     runs-on: ubuntu-latest
     steps:
