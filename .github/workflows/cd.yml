@@ -22,7 +22,7 @@ on:
         description: 'The path to the Dockerfile'
         required: true
         type: string
-        default: ./medusa-docker/
+        default: ./medusa-docker/backend/
       
 
 jobs:
