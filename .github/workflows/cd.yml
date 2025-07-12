@@ -30,7 +30,7 @@ jobs:
     env:
       ECS_TASK_DEFINITION: "medusa-starter-default"
       CONTAINER_NAME: "medusa"
-
+      
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -55,9 +55,7 @@ jobs:
 
       - name: Clone Medusa Server
         run: |
-          git clone https://github.com/medusajs/docker-medusa.git medusa-backend
-          ls -la
-          wget "https://raw.githubusercontent.com/medusajs/medusa/master/package.json" -O ./medusa-backend/package.json
+          git clone https://github.com/toufikj/medusa-starter-default.git medusa-backend
 
       - name: Create Dockerfile for Medusa
         run: |
@@ -66,17 +64,14 @@ jobs:
 
             WORKDIR /app
 
-            COPY package.json ./
-            RUN npm install -g npm@latest
+            COPY package*.json ./
             RUN npm install -g @medusajs/medusa-cli@latest
             RUN npm install
-
             COPY . .
-
             EXPOSE 9000
-
             CMD ["medusa", "develop"]
           EOF
+      
       
       - name: Build and push Docker image
         id: build-and-push
