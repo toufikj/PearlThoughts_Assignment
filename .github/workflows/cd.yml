@@ -75,7 +75,7 @@ jobs:
 
             RUN yarn build
 
-            CMD ["sh", "-c", "npx medusa db:setup && npx medusa start"]
+            CMD ["sh", "-c", "npx medusa db:migrate && npx medusa start"]
           EOF
       
       
