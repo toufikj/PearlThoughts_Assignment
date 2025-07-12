@@ -61,6 +61,7 @@ jobs:
             WORKDIR /app
 
             COPY package*.json ./
+            RUN npm install zod@latest
             RUN npm install
             COPY . .
             EXPOSE 9000
