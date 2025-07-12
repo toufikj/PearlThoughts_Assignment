@@ -63,10 +63,9 @@ jobs:
             COPY package*.json ./
             RUN npm install zod@latest
             RUN npm install
-            RUN npm install @medusajs/workflows-sdk
             COPY . .
             EXPOSE 9000
-            CMD ["sh", "-c", "npx medusa db:migrate && npx medusa build && npm run start"]
+            CMD ["sh", "-c", "npm run predeploy && npm run start"]
           EOF
       
       - name: Build and push Docker image
