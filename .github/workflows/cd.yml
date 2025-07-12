@@ -87,7 +87,7 @@ jobs:
 
             # Add the remaining files
             COPY . .
-
+            RUN yarn install
             # Set the default command to run when the container starts
             ENTRYPOINT ["sh", "develop.sh"]
           EOF
