@@ -22,7 +22,7 @@ on:
         description: 'The path to the Dockerfile'
         required: true
         type: string
-        default: .
+        default: ./medusa-starter-default
       
 
 jobs:
@@ -56,39 +56,26 @@ jobs:
       - name: Clone Medusa Server
         run: |
           git clone https://github.com/medusajs/medusa-starter-default.git
-          git clone https://github.com/Prn-Ice/medusa-docker.git
-          cd medusa-docker
-          git submodule update --init --recursive --remote
-          ls -l
 
       - name: Create Dockerfile for Medusa
         run: |
-          cat <<EOF > ./Dockerfile
+          cat <<EOF > ./medusa-starter-default/Dockerfile
             # Set the base image to Node 17.1.0-alpine
-            FROM node:17.1.0-alpine
+            FROM node:latest
 
-            # Set the working directory
             WORKDIR /app/medusa
 
-            # Copy the necessary files
-            COPY ./medusa-starter-default/package.json .
-            COPY ./medusa-docker/backend/develop.sh .
-            COPY ./medusa-starter-default/yarn.* .
+            COPY . .
 
-            # Run the apk update command to update package information
-            RUN apk update
-            
-            # Add the remaining files
-            COPY ./medusa-starter-default/ .
+            RUN apt-get update && apt-get install -y python3 python3-pip python-is-python3
 
-            # Install dependencies
-            RUN yarn --network-timeout 1000000
+            RUN yarn global add @medusajs/medusa-cli
 
-            # Install the medusa-cli
-            RUN yarn global add @medusajs/medusa-cli@latest
-            
-            # Set the default command to run when the container starts
-            ENTRYPOINT ["sh", "develop.sh"]
+            RUN yarn
+
+            RUN yarn build
+
+            CMD medusa migrations run && yarn start
           EOF
       
       
