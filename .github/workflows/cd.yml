@@ -72,8 +72,8 @@ jobs:
             WORKDIR /app/medusa
 
             # Copy the necessary files
-            COPY package.json .
-            COPY ./medusa-backend/develop.sh .
+            COPY ./backend/package.json .
+            COPY ./backend/develop.sh .
             COPY yarn.* .
 
             # Run the apk update command to update package information
