@@ -87,7 +87,11 @@ jobs:
 
             # Add the remaining files
             COPY . .
-            RUN yarn install
+            # Run build to transpile backend
+            RUN yarn build
+
+            # Run DB migrations
+            RUN yarn predeploy
             # Set the default command to run when the container starts
             ENTRYPOINT ["sh", "develop.sh"]
           EOF
