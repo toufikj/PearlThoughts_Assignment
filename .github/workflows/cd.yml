@@ -22,7 +22,7 @@ on:
         description: 'The path to the Dockerfile'
         required: true
         type: string
-        default: ./medusa-docker/backend/
+        default: .
       
 
 jobs:
@@ -55,6 +55,7 @@ jobs:
 
       - name: Clone Medusa Server
         run: |
+          git clone https://github.com/medusajs/medusa-starter-default.git
           git clone https://github.com/Prn-Ice/medusa-docker
           cd medusa-docker
           git submodule update --init --recursive --remote
@@ -62,8 +63,6 @@ jobs:
 
       - name: Create Dockerfile for Medusa
         run: |
-          cd medusa-docker/backend
-          ls -l
           cat <<EOF > ./Dockerfile
             # Set the base image to Node 17.1.0-alpine
             FROM node:17.1.0-alpine
@@ -72,9 +71,9 @@ jobs:
             WORKDIR /app/medusa
 
             # Copy the necessary files
-            COPY package.json .
-            COPY develop.sh .
-            COPY yarn.* .
+            COPY ./medusa-starter-default/package.json .
+            COPY ./medusa-docker/develop.sh .
+            COPY ./medusa-starter-default/yarn.* .
 
             # Run the apk update command to update package information
             RUN apk update
@@ -86,9 +85,8 @@ jobs:
             RUN yarn global add @medusajs/medusa-cli@latest
 
             # Add the remaining files
-            COPY . .
-            # Run build to transpile backend
-            RUN npx medusa build
+            COPY ./medusa-starter-default/ .
+            
             # Set the default command to run when the container starts
             ENTRYPOINT ["sh", "develop.sh"]
           EOF
